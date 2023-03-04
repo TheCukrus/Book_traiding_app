@@ -16,7 +16,7 @@ const schema_user = new mongoose.Schema(
         "email": { type: String, require: true },
         "password": { type: String, require: true },
         "location": { type: String, required: true },
-        "profile_Picture": { type: String },
+        "profile_picture": { type: String },
         "phone": { type: String, required: true },
         "description": { type: String },
         "created_at": { type: Date, default: Date.now },
