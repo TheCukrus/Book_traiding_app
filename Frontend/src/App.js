@@ -1,13 +1,14 @@
 import './App.css';
 import Navigation from './components/navigation/Navigation.jsx';
-import Registration from './components/registration/Registration.jsx';
+import Adress_routes from './Adress_routes.jsx';
 
 const App = () =>
 {
   return (
     <div>
+
       <Navigation />
-      <Registration />
+      <Adress_routes />
     </div>
   )
 }
