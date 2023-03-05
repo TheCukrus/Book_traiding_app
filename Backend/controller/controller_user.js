@@ -64,7 +64,7 @@ router_user.post("/registration", async (req, res) =>
                 "email": req.body.email,
                 "password": req.body.password,
                 "location": req.body.location,
-                "profile_picture": req.body.profile_Picture,
+                "profile_picture": req.body.profile_picture,
                 "phone": req.body.phone,
                 "description": req.body.description,
             })
