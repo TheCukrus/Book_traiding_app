@@ -28,14 +28,56 @@ const Registration = (props) =>
     const handler_submit = (e) =>
     {
         e.preventDefault();
+
+        //check for username
+        if (!input_form.username)
+        {
+            props.set_error("Please provide a username.");
+            return;
+        }
+
+        //check email
+        const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!input_form.email || !email_regex.test(input_form.email))
+        {
+            props.set_error("Please provide a valid email address.");
+            return;
+        }
+
+        //check phone number
+        const phone_regex = /^\d{10}$/;
+        if (!input_form.phone_number || !phone_regex.test(input_form.phone_number))
+        {
+            props.set_error("Please provide a valid phone number.");
+            return;
+        }
+
+        //check if profile_file isn't empty
+        if (!input_form.profile_photo)
+        {
+            //here ve set a default profile photo
+        }
+
+        //check if passwords match
         if (input_form.password !== input_form.repeat_password)
         {
             props.set_error("Passwords do not match!");
             return;
         }
+
+        //check if password contains 8 characters, one Big letter, small letter, number and a special sign
+        const passowrd_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\d\s:])([^\s]){8,}$/;
+        if (!input_form.password || !passowrd_regex.test(input_form.password))
+        {
+            props.set_error("Please provide a password that contains at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
+            return;
+        }
+
+        //check if checkbox is clicked
+
     }
 
-    //using to error message dissapear in 5 sec.
+    //If an error message is present, set a timeout to clear it after 5 sec.
     useEffect(() =>
     {
         if (props.error !== "")
@@ -106,8 +148,6 @@ const Registration = (props) =>
 export default Registration;
 
 /*
-Add validation to the form inputs to ensure that they meet certain criteria (e.g. minimum length for passwords, valid email format, etc.).
-Add client-side validation to ensure that the passwords match before submitting the form.
 Add a backend API call to actually create the user account on the server.
 Add a success message to display to the user upon successful registration.
 */
