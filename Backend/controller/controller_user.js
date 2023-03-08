@@ -11,7 +11,7 @@ router_user.post("/registration", async (req, res) =>
     try
     {
         //checing is username free
-        const check_name = await model_user.findOne({ "name": req.body.name });
+        const check_name = await model_user.findOne({ "name": req.body.username });
         if (check_name !== null)
         {
             res.status(400).json({ message: "This username is already taken." });
@@ -19,17 +19,17 @@ router_user.post("/registration", async (req, res) =>
         }
 
         //checing phone number
-        const check_phone = await model_user.findOne({ "phone": req.body.phone });
+        const check_phone = await model_user.findOne({ "phone": req.body.phone_number });
         if (check_phone !== null)
         {
             res.status(400).json({ message: "This phone number is used by onother user." });
             return;
         }
-        const phone_regex = /^(\+?\d{1,3})?[-.\s]?\(?(\d{3})\)?[-.\s]?(\d{3})[-.\s]?(\d{4})$/;
-        const is_valid_phone = phone_regex.test(req.body.phone);
+        const phone_regex = /(?:\+\d{1,3}[- ]?)?\d?\d{3}[- ]?\d{5}/;
+        const is_valid_phone = phone_regex.test(req.body.phone_number);
         if (!is_valid_phone)
         {
-            res.status(400).json({ message: "Please input correct number" });
+            res.status(400).json({ message: "Please input correct phone number" });
             return;
         }
 
@@ -60,13 +60,13 @@ router_user.post("/registration", async (req, res) =>
         //creting new user
         const new_user = await model_user.create(
             {
-                "name": req.body.name,
+                "name": req.body.username,
                 "email": req.body.email,
                 "password": req.body.password,
-                "location": req.body.location,
-                "profile_picture": req.body.profile_picture,
-                "phone": req.body.phone,
-                "description": req.body.description,
+                "location": req.body.city,
+                "profile_picture": req.body.profile_photo,
+                "phone": req.body.phone_number,
+                "description": req.body.about_you,
             })
         res.status(201).json({ message: "New user created" })
         return;

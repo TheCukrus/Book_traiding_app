@@ -5,12 +5,20 @@ import { useState } from 'react';
 
 const App = () =>
 {
-  const [error, set_error] = useState("");
+  const [error, set_error] = useState(false);
+  const [success_message, set_success_message] = useState(false);
   return (
     <div>
 
       <Navigation />
-      <Adress_routes error={error} set_error={set_error} />
+
+      <Adress_routes
+        error={error}
+        set_error={set_error}
+        success_message={success_message}
+        set_success_message={set_success_message}
+      />
+
     </div>
   )
 }
