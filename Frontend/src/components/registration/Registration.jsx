@@ -1,8 +1,13 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import Input from "../../modules/Input.jsx";
+import Success_message from "../../modules/messages/Success_message.jsx";
+import axios from "axios";
+import Error_message from "../../modules/messages/Error_message.jsx";
+import convert_photo_to_string from "../../modules/Convert_photo_to_string.js";
 
 const Registration = (props) =>
 {
+    const [err_msg, set_err_msg] = useState("");
     const [input_form, set_input_form] = useState(
         {
             "username": "",
@@ -17,129 +22,206 @@ const Registration = (props) =>
 
     const handle_input_change = (e) =>
     {
-        const { name, value, files } = e.target;
+        const { name, value } = e.target;
         set_input_form((prev_states) =>
         ({
             ...prev_states,
-            [name]: name === "profile_photo" ? files[0] : value,
+            [name]: value
         }))
     };
 
-    const handler_submit = (e) =>
+    const handle_file_input_change = async (e) =>
+    {
+        //here need to make that input 
+        const file = e.target.files[0].name;
+        const temp = await convert_photo_to_string(file);
+        console.log(temp)
+        set_input_form((prev_states) =>
+        ({
+            ...prev_states,
+            "profile_photo": temp
+        }))
+    }
+
+    const handler_submit = async (e) =>
     {
         e.preventDefault();
 
-        //check for username
-        if (!input_form.username)
-        {
-            props.set_error("Please provide a username.");
-            return;
-        }
-
         //check email
         const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!input_form.email || !email_regex.test(input_form.email))
+        if (!email_regex.test(input_form.email))
         {
-            props.set_error("Please provide a valid email address.");
+            props.set_error(true);
+            set_err_msg("Please provide a valid email address.")
             return;
         }
 
         //check phone number
-        const phone_regex = /^\d{10}$/;
-        if (!input_form.phone_number || !phone_regex.test(input_form.phone_number))
+        const phone_regex = /(?:\+\d{1,3}[- ]?)?\d?\d{3}[- ]?\d{5}/;
+        if (!phone_regex.test(input_form.phone_number))
         {
-            props.set_error("Please provide a valid phone number.");
+            props.set_error(true);
+            set_err_msg("Please provide a valid phone number.");
             return;
         }
 
-        //check if profile_file isn't empty
-        if (!input_form.profile_photo)
+        //check if profile_photo isn't empty
+        if (input_form.profile_photo)
         {
-            //here ve set a default profile photo
+            // const conv_to_string = convert_photo_to_string(input_form.profile_photo);
+            // set_input_form((prev_states) =>
+            // ({
+            //     ...prev_states,
+            //     ["profile_photo"]: conv_to_string,
+            // }))
         }
 
         //check if passwords match
         if (input_form.password !== input_form.repeat_password)
         {
-            props.set_error("Passwords do not match!");
+            props.set_error(true);
+            set_err_msg("Passwords do not match!");
             return;
         }
 
         //check if password contains 8 characters, one Big letter, small letter, number and a special sign
         const passowrd_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\d\s:])([^\s]){8,}$/;
-        if (!input_form.password || !passowrd_regex.test(input_form.password))
+        if (!passowrd_regex.test(input_form.password))
         {
-            props.set_error("Please provide a password that contains at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
+            props.set_error(true);
+            set_err_msg("Please provide a password that contains at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.")
             return;
         }
 
-        //check if checkbox is clicked
-
+        //creating a new user
+        try
+        {
+            const new_user = await axios.post("http://127.0.0.1:80/api/v1/user/registration", input_form);
+            props.set_success_message(true);
+        }
+        catch (err)
+        {
+            props.set_error(true);
+            set_err_msg(err.response.data.message);
+        }
     }
 
     //If an error message is present, set a timeout to clear it after 5 sec.
     useEffect(() =>
     {
-        if (props.error !== "")
+        if (props.error)
         {
-            const time_out = setTimeout(() => props.set_error(""), 5000);
+            const time_out = setTimeout(() => props.set_error(false), 5000);
             return () => clearTimeout(time_out);
         }
     }, [props.error]);
 
+    //using to success message disapear in 5 sec
+    useEffect(() =>
+    {
+        if (props.success_message)
+        {
+            const time_out = setTimeout(() => props.set_success_message(false), 5000);
+            return () => clearTimeout(time_out);
+        }
+    }, [props.success_message]);
     return (
         <div>
-            <h1>this is registration page</h1>
-            {props.error && <p>{props.error}</p>}
+            {props.error && <Error_message message={err_msg} />}
             <form onSubmit={handler_submit}>
-                <label htmlFor="username">
-                    <p>Username:</p>
-                    <input type="text" name="username" value={input_form.username} onChange={handle_input_change} placeholder="Input username" />
-                </label>
 
-                <label htmlFor="email">
-                    <p>Email:</p>
-                    <input type="email" name="email" value={input_form.email} onChange={handle_input_change} placeholder="Input your email" />
-                </label>
+                {/*Username */}
+                <Input
+                    type="text"
+                    name="username"
+                    value={input_form.username}
+                    placeholder="Input username"
+                    onChange={handle_input_change}
+                    required={true}
+                    min_length={3}
+                    max_length={25}
+                />
 
-                <label htmlFor="phone_number">
-                    <p>Phone number:</p>
-                    <input type="text" name="phone_number" value={input_form.phone_number} onChange={handle_input_change} placeholder="Input your phone number" />
-                </label>
+                {/*Email*/}
+                <Input
+                    type="email"
+                    name="email"
+                    value={input_form.email}
+                    placeholder="Input your email"
+                    onChange={handle_input_change}
+                    required={true}
+                />
 
-                <label htmlFor="city">
-                    <p>City:</p>
-                    <input type="text" name="city" value={input_form.city} onChange={handle_input_change} placeholder="Input your city" />
-                </label>
+                {/*Phone number*/}
+                <Input
+                    type="text"
+                    name="phone_number"
+                    value={input_form.phone_number}
+                    placeholder="Input your phone number"
+                    onChange={handle_input_change}
+                    required={true}
+                />
 
-                <label htmlFor="about_you">
-                    <p>About you:</p>
-                    <input type="text" name="about_you" value={input_form.about_you} onChange={handle_input_change} placeholder="Tell something about you" />
-                </label>
+                {/*City*/}
+                <Input type="text"
+                    name="city"
+                    value={input_form.city}
+                    placeholder="Input your city"
+                    onChange={handle_input_change}
+                />
 
-                <label htmlFor="profile_photo">
-                    <p>Profile photo:</p>
-                    <input type="file" name="profile_photo" value={input_form.profile_photo} onChange={handle_input_change} />
-                </label>
+                {/*About you*/}
+                <Input
+                    type="text"
+                    name="about_you"
+                    value={input_form.about_you}
+                    placeholder="Tell something about you"
+                    onChange={handle_input_change}
+                />
 
-                <label htmlFor="password">
-                    <p>Password:</p>
-                    <input type="password" name="password" value={input_form.password} onChange={handle_input_change} placeholder="Input your password" />
-                </label>
+                {/*Profile photo*/}
+                <Input
+                    type="file"
+                    name="profile_photo"
+                    // value={input_form.profile_photo}
+                    onClick={handle_file_input_change}
+                />
 
-                <label htmlFor="repeat_password">
-                    <p>Repeat password:</p>
-                    <input type="password" name="repeat_password" value={input_form.repeat_password} onChange={handle_input_change} placeholder="Repeat your password" />
-                </label>
+                {/*Password*/}
+                <Input
+                    type="password"
+                    name="password"
+                    value={input_form.password}
+                    placeholder="Input your password"
+                    onChange={handle_input_change}
+                    required={true}
+                    min_length={8}
+                />
 
-                <label htmlFor="term_and_conditions">
-                    <p>Terms and conditions</p>
-                    <input type="checkbox" />
-                </label>
+                {/*Repeat password*/}
+                <Input
+                    type="password"
+                    name="repeat_password"
+                    value={input_form.repeat_password}
+                    placeholder="repeat your password"
+                    onChange={handle_input_change}
+                    required={true}
+                    min_length={8}
+                />
 
+                {/*Terms and conditions */}
+                <Input
+                    type="checkbox"
+                    name="terms and conditions"
+                    required={true}
+                />
+
+                {/*Submit button*/}
                 <label htmlFor="submit">
                     <input type="submit" />
                 </label>
+                {/*Success message apears when user creates an account*/}
+                {props.success_message && <Success_message message={`User account created successfully!`} />}
             </form>
         </div>
     )
@@ -148,6 +230,8 @@ const Registration = (props) =>
 export default Registration;
 
 /*
-Add a backend API call to actually create the user account on the server.
-Add a success message to display to the user upon successful registration.
+doesn't work profile photo uploader
+input form
+handle change
+input_form (useState)
 */
