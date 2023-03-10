@@ -40,7 +40,7 @@ router_user.post("/registration", async (req, res) =>
             res.status(400).json({ message: "This email is taken." });
             return;
         }
-        const email_regex = /^\S+@\S+\.\S+$/;
+        const email_regex = /\S+@\S+\.\S+/;
         const is_valid_email = email_regex.test(req.body.email);
         if (!is_valid_email)
         {
@@ -63,10 +63,10 @@ router_user.post("/registration", async (req, res) =>
                 "name": req.body.username,
                 "email": req.body.email,
                 "password": req.body.password,
-                "location": req.body.city,
+                "location": req.body.location,
                 "profile_picture": req.body.profile_photo,
                 "phone": req.body.phone_number,
-                "description": req.body.about_you,
+                "description": req.body.description,
             })
         res.status(201).json({ message: "New user created" })
         return;

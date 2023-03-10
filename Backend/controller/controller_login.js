@@ -10,7 +10,7 @@ const ERROR_MESSAGES = {
   EMPTY_PASSWORD: "Please enter a password",
   USER_NOT_FOUND: "User not found",
   INVALID_PASSWORD: "Invalid password",
-  INVALID_SEASION: "Failed to update session",
+  INVALID_SESSION: "Invalid session",
 };
 
 //Authentication middleware
@@ -27,7 +27,7 @@ const authenticate_session = async (req, res, next) =>
 
     if (!session)
     {
-      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SEASION })
+      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SESSION })
     }
 
     //Check if session has expired
@@ -39,7 +39,7 @@ const authenticate_session = async (req, res, next) =>
         { "username": req.body.username },
         { $unset: { "session": "" } }
       );
-      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SEASION })
+      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SESSION })
     }
 
     //Update session expiration date
@@ -49,7 +49,7 @@ const authenticate_session = async (req, res, next) =>
     );
     if (update_result.nModified === 0)
     {
-      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SEASION });
+      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION });
     }
 
     next();
@@ -60,12 +60,12 @@ const authenticate_session = async (req, res, next) =>
   }
 }
 
-//authentication
-router_login.post("/auth", async (req, res) =>
+//Authentication endpoin
+router_login.post("/", async (req, res) =>
 {
   try
   {
-    //check if username and password are provided
+    //Check if username and password are provided
     if (!req.body.username)
     {
       return res.status(400).json({ message: ERROR_MESSAGES.EMPTY_USERNAME })
@@ -96,31 +96,81 @@ router_login.post("/auth", async (req, res) =>
     //session token expiration data
     const expiration_date = new Date(Date.now() + 30 * 60 * 1000);
 
-    //Update session in database
-    const session = {
-      "token": token,
-      "role": user.role,
-      "expiration_date": expiration_date
-    }
 
-    const update_result = await model_authentication.updateOne(
-      { "username": req.body.username },
-      { $set: { "session": session } }
-    );
-    if (update_result.nModified === 0)
+    const session =
     {
-      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SEASION });
-    }
+      "token": token,
+      "expiration_date": expiration_date
+    };
 
-    res.status(200).json(
+    //creating new session
+    const create_session = await model_authentication.create(
       {
-        "token": token,
-        "role": user.role
+        "username": req.body.username,
+        "session": session
       });
 
+    //Update session in database
+    const update_result = await model_authentication.updateOne(
+      { "username": req.body.username },
+      {
+        $set: {
+          "session.token": token,
+          "session.expiration_date": expiration_date
+        }
+      });
+    if (update_result.nModified === 0)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION });
+    }
+
+    res.status(200).json({ "token": token });
   }
   catch (err)
   {
     res.status(400).json({ message: err.message })
   }
 })
+
+export default router_login;
+
+/*
+const logout = async (req, res) => {
+  try {
+    // Find session in database and delete it
+    const session = await model_authentication.findOneAndDelete({
+      "session.token": req.headers.authorization,
+    });
+
+    if (!session) {
+      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION });
+    }
+
+    res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+const authenticateSession = async (req, res, next) => {
+  try {
+    // Find session in database
+    const session = await model_authentication.findOne({
+      username: req.body.username,
+      "session.token": req.headers.authorization,
+    });
+
+    if (!session) {
+      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SESSION });
+    }
+
+    // Check if session has expired
+    const expirationDate = new Date(session.session.expiration_date);
+    if (expirationDate < Date.now()) {
+      // Reset session if expired
+      await model_authentication.updateOne(
+        { username: req.body.username },
+        { $unset: { session: "" } }
+      );
+      return res.status(401).json({ message: ERROR
+        */
