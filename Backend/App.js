@@ -1,5 +1,6 @@
 import express from "express";
 import router_user from "./controller/controller_user.js";
+import router_login from "./controller/controller_login.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
@@ -21,5 +22,6 @@ app.use(cors());
 
 // //routes
 app.use("/api/v1/user", router_user);
+app.use("/api/v1/login", router_login)
 
 export default app;

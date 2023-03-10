@@ -14,7 +14,7 @@ const Registration = (props) =>
             "email": "",
             "phone_number": "",
             "city": "",
-            "about_you": "",
+            "description": "",
             "profile_photo": "",
             "password": "",
             "repeat_password": ""
@@ -173,8 +173,8 @@ const Registration = (props) =>
                 {/*About you*/}
                 <Input
                     type="text"
-                    name="about_you"
-                    value={input_form.about_you}
+                    name="description"
+                    value={input_form.description}
                     placeholder="Tell something about you"
                     onChange={handle_input_change}
                 />

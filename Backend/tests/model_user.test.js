@@ -6,7 +6,7 @@ describe("Password hashing", () =>
 {
     test("Should hash password correctly", async () =>
     {
-        const password = "test123";
+        const password = "Testing.123456";
         const hashed_password = await bcrypt.hash(password, salt_rounds);
         expect(hashed_password).not.toBe(password);
         expect(typeof hashed_password).toBe("string");

@@ -1,4 +1,3 @@
-import model_user from "../models/model_user.js";
 import supertest from "supertest";
 import app from "../App.js";
 import mongoose from "mongoose";
@@ -13,18 +12,18 @@ describe("Create user", () =>
     {
         const user_data =
         {
-            "name": "John Doe",
+            "username": "John",
             "email": "john.doe@example.com",
-            "password": "Password123!",
+            "password": "Testing.123456",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+37061234689",
+            "phone_number": "+37061234567",
             "description": "This is a test user"
         };
+
         const response = await supertest1
             .post("/api/v1/user/registration")
             .send(user_data);
-        user_id = res.body.user.id;
         expect(response.statusCode).toBe(201);
         expect(response.body).toHaveProperty("message", "New user created");
     })
@@ -32,12 +31,12 @@ describe("Create user", () =>
     test("Shouldn't create user with same name", async () =>
     {
         const same_name_user = {
-            "name": "John Doe",
+            "username": "John",
             "email": "johne.doe@example.com",
             "password": "Password1233!",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+37061234679",
+            "phone_number": "+37061234679",
             "description": "This is a test user"
         };
         const response = await supertest1
@@ -52,12 +51,12 @@ describe("Create user", () =>
     {
         const user_data =
         {
-            "name": "John Does",
+            "username": "Johnas",
             "email": "johna.doe@example.com",
             "password": "Password1123!",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+37061234689",
+            "phone_number": "+37061234567",
             "description": "This is a test user"
         };
         const response = await supertest1
@@ -72,12 +71,12 @@ describe("Create user", () =>
     {
         const user_data =
         {
-            "name": "Johna Doe",
+            "username": "Johna Doe",
             "email": "john.doe@example.com",
             "password": "Password1232!",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+370612343689",
+            "phone_number": "+37061234368",
             "description": "This is a test user"
         };
         const response = await supertest1
@@ -92,12 +91,12 @@ describe("Create user", () =>
     {
         const user_data =
         {
-            "name": "Johna Doe",
+            "username": "Johna Doe",
             "email": "johna.doe@example.com",
             "password": "P3!",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+373061234689",
+            "phone_number": "+373061234689",
             "description": "This is a test user"
         };
         const response = await supertest1
@@ -112,12 +111,12 @@ describe("Create user", () =>
     {
         const user_data =
         {
-            "name": "Johna Doe",
+            "username": "Johna Doe",
             "email": "johna.doe@example.com",
             "password": "Passwordas!",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+373061234689",
+            "phone_number": "+373061234689",
             "description": "This is a test user"
         };
         const response = await supertest1
@@ -132,12 +131,12 @@ describe("Create user", () =>
     {
         const user_data =
         {
-            "name": "Johna Doe",
+            "username": "Johna Doe",
             "email": "johna.doe@example.com",
             "password": "Password12345",
             "location": "Vilnius",
             "profile_picture": "default_profile_picture",
-            "phone": "+373061234689",
+            "phone_number": "+373061234689",
             "description": "This is a test user"
         };
         const response = await supertest1
