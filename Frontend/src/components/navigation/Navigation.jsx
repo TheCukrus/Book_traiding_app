@@ -10,6 +10,7 @@ const Navigation = () =>
             <input type="search" placeholder="Search for books" />
             <h1>profile</h1>
             <Link to="/registration">Registration</Link>
+            <Link to="/login">Login</Link>
 
         </div>
 
