@@ -8,59 +8,14 @@ const router_login = express.Router();
 const ERROR_MESSAGES = {
   EMPTY_USERNAME: "Please enter a username",
   EMPTY_PASSWORD: "Please enter a password",
+  EMPTY_TOKEN: "Token not find",
   USER_NOT_FOUND: "User not found",
   INVALID_PASSWORD: "Invalid password",
   INVALID_SESSION: "Invalid session",
+  TOKEN_UNAUTHORIZED: "Session not found"
 };
 
-//Authentication middleware
-const authenticate_session = async (req, res, next) =>
-{
-  try
-  {
-    //Find session in database
-    const session = await model_authentication.findOne(
-      {
-        "username": req.body.username,
-        "session.token": req.headers.authorization
-      });
-
-    if (!session)
-    {
-      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SESSION })
-    }
-
-    //Check if session has expired
-    const expiration_date = new Date(session.session.expiration_date);
-    if (expiration_date < Date.now())
-    {
-      //Reset session if expired
-      await model_authentication.updateOne(
-        { "username": req.body.username },
-        { $unset: { "session": "" } }
-      );
-      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SESSION })
-    }
-
-    //Update session expiration date
-    const update_result = await model_authentication.updateOne(
-      { "username": req.body.username },
-      { $set: { "session.expiration_date": new Date(Date.now() + 30 * 60 * 1000) } }
-    );
-    if (update_result.nModified === 0)
-    {
-      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION });
-    }
-
-    next();
-  }
-  catch (err)
-  {
-    res.status(400).json({ message: err.message });
-  }
-}
-
-//Authentication endpoin
+//Authentication endpoint
 router_login.post("/", async (req, res) =>
 {
   try
@@ -96,7 +51,6 @@ router_login.post("/", async (req, res) =>
     //session token expiration data
     const expiration_date = new Date(Date.now() + 30 * 60 * 1000);
 
-
     const session =
     {
       "token": token,
@@ -110,20 +64,6 @@ router_login.post("/", async (req, res) =>
         "session": session
       });
 
-    //Update session in database
-    const update_result = await model_authentication.updateOne(
-      { "username": req.body.username },
-      {
-        $set: {
-          "session.token": token,
-          "session.expiration_date": expiration_date
-        }
-      });
-    if (update_result.nModified === 0)
-    {
-      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION });
-    }
-
     res.status(200).json({ "token": token });
   }
   catch (err)
@@ -132,45 +72,91 @@ router_login.post("/", async (req, res) =>
   }
 })
 
-export default router_login;
+//PUT endpoint for updating an existing session
+router_login.put("/", async (req, res) =>
+{
+  try
+  {
+    const { username, token } = req.body;
 
-/*
-const logout = async (req, res) => {
-  try {
-    // Find session in database and delete it
-    const session = await model_authentication.findOneAndDelete({
-      "session.token": req.headers.authorization,
-    });
-
-    if (!session) {
-      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION });
+    //Check if username and token is provided
+    if (!username)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.EMPTY_USERNAME });
     }
 
-    res.status(200).json({ message: "Logout successful" });
-  } catch (err) {
+    if (!token)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.EMPTY_TOKEN });
+    }
+
+    //Find user session in database
+    const user_session = await model_authentication.findOne({ username, "session.token": token });
+
+    if (!user_session)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.UNAUTHORIZED });
+    }
+
+    //Update session expiration date
+    const update_result = await model_authentication.updateOne(
+      { "username": username, "session.token": token },
+      { $set: { "session.expiration_date": new Date(Date.now() + 30 * 60 * 1000) } }
+    );
+
+    //If session not updated, return error
+    if (update_result.nModified === 0)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.INVALID_SESSION })
+    }
+
+    //Return success message
+    res.status(200).json({ message: "Session updated successfully" });
+  }
+  catch (err)
+  {
     res.status(400).json({ message: err.message });
   }
-};
+})
 
-const authenticateSession = async (req, res, next) => {
-  try {
-    // Find session in database
-    const session = await model_authentication.findOne({
-      username: req.body.username,
-      "session.token": req.headers.authorization,
-    });
+//DELETE endpoint for logging out a user
+router_login.delete("/", async (req, res) =>
+{
+  try
+  {
+    const { username, token } = req.body;
 
-    if (!session) {
-      return res.status(401).json({ message: ERROR_MESSAGES.INVALID_SESSION });
+    //Check if username and token are provided
+    if (!username)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.EMPTY_USERNAME });
+    }
+    if (!token)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.EMPTY_TOKEN });
     }
 
-    // Check if session has expired
-    const expirationDate = new Date(session.session.expiration_date);
-    if (expirationDate < Date.now()) {
-      // Reset session if expired
-      await model_authentication.updateOne(
-        { username: req.body.username },
-        { $unset: { session: "" } }
-      );
-      return res.status(401).json({ message: ERROR
-        */
+    //Find user session in database
+    const user_session = await model_authentication.findOne({ username, "session.token": token });
+
+    if (!user_session)
+    {
+      return res.status(400).json({ message: ERROR_MESSAGES.UNAUTHORIZED });
+    }
+
+    //Clear user's session data
+    const delete_session = await model_authentication.updateOne(
+      { "username": username },
+      { $unset: { "session": "" } }
+    );
+
+    //Return success message
+    res.status(200).json({ message: "Logged out successfully" });
+  }
+  catch (err)
+  {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+export default router_login;
