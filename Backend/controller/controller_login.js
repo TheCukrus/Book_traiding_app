@@ -10,12 +10,50 @@ const ERROR_MESSAGES = {
   EMPTY_PASSWORD: "Please enter a password",
   EMPTY_TOKEN: "Token not find",
   USER_NOT_FOUND: "User not found",
+  USER_UNAUTHORIZED: "UNAUTHORIZED",
   INVALID_PASSWORD: "Invalid password",
   INVALID_SESSION: "Invalid session",
-  TOKEN_UNAUTHORIZED: "Session not found"
+  TOKEN_UNAUTHORIZED: "Session not found",
+  SESSION_TIME_OUT: "Session expired"
 };
 
-//Authentication endpoint
+//GET endpoint to check if there is a session
+router_login.get("/check_session", async (req, res) =>
+{
+  const { username, token } = req.headers;
+  try
+  {
+    //Check if username and token provided
+    if (!username || !token)
+    {
+      return res.status(401).json({ message: ERROR_MESSAGES.USER_UNAUTHORIZED })
+    }
+
+    //Find user session in database
+    const user_session = await model_authentication.findOne({ username, "session.token": token });
+
+    if (!user_session)
+    {
+      return res.status(404).json({ message: ERROR_MESSAGES.TOKEN_UNAUTHORIZED })
+    }
+
+    //Check session expiration date
+    const expiration_date = new Date(user_session.session.expiration_date);
+    if (expiration_date < new Date())
+    {
+      return res.status(401).json({ message: ERROR_MESSAGES.SESSION_TIME_OUT })
+    }
+
+    //Return success message
+    res.status(200).json({ message: "Session active" });
+  }
+  catch (err)
+  {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//POST endpoint to create a new session
 router_login.post("/", async (req, res) =>
 {
   try
