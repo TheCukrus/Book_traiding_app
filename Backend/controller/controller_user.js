@@ -1,16 +1,66 @@
 import express from "express";
 import model_user from "../models/model_user.js";
+import model_authentication from "../models/model_authentication.js";
+import { ERROR_MESSAGES } from "../utils/constants.js";
 
 const router_user = express.Router();
 
-//
+//Find user by token
+router_user.get("/", async (req, res) =>
+{
+    try
+    {
+        const token = req.cookies.token;
+        if (!token)
+        {
+            return res.status(401).json({ message: ERROR_MESSAGES.USER_UNAUTHORIZED })
+        }
 
-//create new user
+        //Find user session in database
+        const user_session = await model_authentication.findOne({ "session.token": token });
+
+        if (!user_session)
+        {
+            return res.status(404).json({ message: ERROR_MESSAGES.TOKEN_UNAUTHORIZED })
+        }
+
+        //Check session expiration date
+        const expiration_date = new Date(user_session.session.expiration_date);
+        if (expiration_date < new Date())
+        {
+            res.clearCookie("token");
+            return res.status(401).json({ message: ERROR_MESSAGES.SESSION_TIME_OUT })
+        }
+
+        const user_data = await model_user.findOne({ "name": user_session.username });
+        if (!user_data)
+        {
+            return res.status(400).json({ message: ERROR_MESSAGES.USER_NOT_FOUND })
+        }
+
+        res.status(200).json(
+            {
+                "username": user_data.name,
+                "email": user_data.email,
+                "location": user_data.location,
+                "profile_picture": user_data.profile_picture,
+                "phone": user_data.phone,
+                "description": user_data.description,
+                "id": user_data.id
+            })
+    }
+    catch (err)
+    {
+        res.status(400).json({ message: err.message })
+    }
+})
+
+//Create new user
 router_user.post("/registration", async (req, res) =>
 {
     try
     {
-        //checing is username free
+        //Checing is username free
         const check_name = await model_user.findOne({ "name": req.body.username });
         if (check_name !== null)
         {
@@ -18,7 +68,7 @@ router_user.post("/registration", async (req, res) =>
             return;
         }
 
-        //checing phone number
+        //Checing phone number
         const check_phone = await model_user.findOne({ "phone": req.body.phone_number });
         if (check_phone !== null)
         {
@@ -33,7 +83,7 @@ router_user.post("/registration", async (req, res) =>
             return;
         }
 
-        //checing email
+        //Checing email
         const check_email = await model_user.findOne({ "email": req.body.email });
         if (check_email !== null)
         {
@@ -48,7 +98,7 @@ router_user.post("/registration", async (req, res) =>
             return;
         }
 
-        //check for password
+        //Check for password
         const password_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
         const is_valid_password = password_regex.test(req.body.password);
         if (!is_valid_password)
@@ -57,7 +107,7 @@ router_user.post("/registration", async (req, res) =>
             return;
         }
 
-        //creting new user
+        //Creting new user
         const new_user = await model_user.create(
             {
                 "name": req.body.username,
@@ -78,7 +128,7 @@ router_user.post("/registration", async (req, res) =>
     }
 })
 
-//delete user
+//Delete user
 router_user.delete("/delete/:id", async (req, res) =>
 {
     try
