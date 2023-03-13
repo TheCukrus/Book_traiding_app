@@ -2,35 +2,25 @@ import express from "express";
 import model_authentication from "../models/model_authentication.js";
 import model_user from "../models/model_user.js";
 import bcrypt from "bcryptjs";
+import { ERROR_MESSAGES } from "../utils/constants.js";
 
 const router_login = express.Router();
-
-const ERROR_MESSAGES = {
-  EMPTY_USERNAME: "Please enter a username",
-  EMPTY_PASSWORD: "Please enter a password",
-  EMPTY_TOKEN: "Token not find",
-  USER_NOT_FOUND: "User not found",
-  USER_UNAUTHORIZED: "UNAUTHORIZED",
-  INVALID_PASSWORD: "Invalid password",
-  INVALID_SESSION: "Invalid session",
-  TOKEN_UNAUTHORIZED: "Session not found",
-  SESSION_TIME_OUT: "Session expired"
-};
 
 //GET endpoint to check if there is a session
 router_login.get("/check_session", async (req, res) =>
 {
-  const { username, token } = req.headers;
   try
   {
-    //Check if username and token provided
-    if (!username || !token)
+    const auth_cookie = req.cookies.token;
+    if (!auth_cookie)
     {
       return res.status(401).json({ message: ERROR_MESSAGES.USER_UNAUTHORIZED })
     }
 
+    const token = auth_cookie;
+
     //Find user session in database
-    const user_session = await model_authentication.findOne({ username, "session.token": token });
+    const user_session = await model_authentication.findOne({ "session.token": token });
 
     if (!user_session)
     {
@@ -41,6 +31,7 @@ router_login.get("/check_session", async (req, res) =>
     const expiration_date = new Date(user_session.session.expiration_date);
     if (expiration_date < new Date())
     {
+      res.clearCookie("token");
       return res.status(401).json({ message: ERROR_MESSAGES.SESSION_TIME_OUT })
     }
 
@@ -102,7 +93,8 @@ router_login.post("/", async (req, res) =>
         "session": session
       });
 
-    res.status(200).json({ "token": token });
+    res.cookie("token", session.token)
+    res.status(200).json({ "token": session.token });
   }
   catch (err)
   {
@@ -196,5 +188,4 @@ router_login.delete("/", async (req, res) =>
     res.status(400).json({ message: err.message });
   }
 });
-
 export default router_login;
