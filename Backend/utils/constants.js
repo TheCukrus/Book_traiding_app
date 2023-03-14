@@ -7,5 +7,7 @@ export const ERROR_MESSAGES = {
     INVALID_PASSWORD: "Invalid password",
     INVALID_SESSION: "Invalid session",
     TOKEN_UNAUTHORIZED: "Session not found",
-    SESSION_TIME_OUT: "Session expired"
+    SESSION_TIME_OUT: "Session expired",
+    NOT_MODIFIED: "Can't update session",
+    SERVER_ERROR: "Can't reach server"
 };
