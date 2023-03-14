@@ -6,44 +6,6 @@ import { ERROR_MESSAGES } from "../utils/constants.js";
 
 const router_login = express.Router();
 
-//GET endpoint to check if there is a session
-router_login.get("/check_session", async (req, res) =>
-{
-  try
-  {
-    const auth_cookie = req.cookies.token;
-    if (!auth_cookie)
-    {
-      return res.status(401).json({ message: ERROR_MESSAGES.USER_UNAUTHORIZED })
-    }
-
-    const token = auth_cookie;
-
-    //Find user session in database
-    const user_session = await model_authentication.findOne({ "session.token": token });
-
-    if (!user_session)
-    {
-      return res.status(404).json({ message: ERROR_MESSAGES.TOKEN_UNAUTHORIZED })
-    }
-
-    //Check session expiration date
-    const expiration_date = new Date(user_session.session.expiration_date);
-    if (expiration_date < new Date())
-    {
-      res.clearCookie("token");
-      return res.status(401).json({ message: ERROR_MESSAGES.SESSION_TIME_OUT })
-    }
-
-    //Return success message
-    res.status(200).json({ message: "Session active" });
-  }
-  catch (err)
-  {
-    res.status(400).json({ message: err.message })
-  }
-})
-
 //POST endpoint to create a new session
 router_login.post("/", async (req, res) =>
 {
@@ -93,7 +55,8 @@ router_login.post("/", async (req, res) =>
         "session": session
       });
 
-    res.cookie("token", session.token)
+    res.set("Authorization", `Bearer ${token}`)
+    // res.cookie("token", session.token)
     res.status(200).json({ "token": session.token });
   }
   catch (err)
