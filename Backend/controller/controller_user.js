@@ -2,34 +2,22 @@ import express from "express";
 import model_user from "../models/model_user.js";
 import model_authentication from "../models/model_authentication.js";
 import { ERROR_MESSAGES } from "../utils/constants.js";
+import { check_session, update_session } from "../utils/middlewares.js";
 
 const router_user = express.Router();
 
 //Find user by token
-router_user.get("/", async (req, res) =>
+router_user.get("/", check_session, update_session, async (req, res) =>
 {
     try
     {
-        const token = req.cookies.token;
-        if (!token)
-        {
-            return res.status(401).json({ message: ERROR_MESSAGES.USER_UNAUTHORIZED })
-        }
-
+        const token = req.headers.authorization.split(" ")[1];
         //Find user session in database
         const user_session = await model_authentication.findOne({ "session.token": token });
 
         if (!user_session)
         {
             return res.status(404).json({ message: ERROR_MESSAGES.TOKEN_UNAUTHORIZED })
-        }
-
-        //Check session expiration date
-        const expiration_date = new Date(user_session.session.expiration_date);
-        if (expiration_date < new Date())
-        {
-            res.clearCookie("token");
-            return res.status(401).json({ message: ERROR_MESSAGES.SESSION_TIME_OUT })
         }
 
         const user_data = await model_user.findOne({ "name": user_session.username });
