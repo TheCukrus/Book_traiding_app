@@ -87,7 +87,7 @@ router_user.post("/registration", async (req, res) =>
         }
 
         //Check for password
-        const password_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+        const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\d\s:])([^\s]){8,}$/;
         const is_valid_password = password_regex.test(req.body.password);
         if (!is_valid_password)
         {
