@@ -3,7 +3,7 @@ import Input from "../../modules/Input.jsx";
 import Success_message from "../../modules/messages/Success_message.jsx";
 import axios from "axios";
 import Error_message from "../../modules/messages/Error_message.jsx";
-import convert_photo_to_string from "../../modules/Convert_photo_to_string.js";
+import { convert_photo_to_string } from "../../modules/Convert_photo_to_string.js";
 
 const Registration = (props) =>
 {
@@ -63,17 +63,6 @@ const Registration = (props) =>
             props.set_error(true);
             set_err_msg("Please provide a valid phone number.");
             return;
-        }
-
-        //check if profile_photo isn't empty
-        if (input_form.profile_photo)
-        {
-            // const conv_to_string = convert_photo_to_string(input_form.profile_photo);
-            // set_input_form((prev_states) =>
-            // ({
-            //     ...prev_states,
-            //     ["profile_photo"]: conv_to_string,
-            // }))
         }
 
         //check if passwords match
@@ -183,8 +172,7 @@ const Registration = (props) =>
                 <Input
                     type="file"
                     name="profile_photo"
-                    // value={input_form.profile_photo}
-                    onClick={handle_file_input_change}
+                    onChange={(event) => convert_photo_to_string(set_input_form, event.target.files[0])}
                 />
 
                 {/*Password*/}
