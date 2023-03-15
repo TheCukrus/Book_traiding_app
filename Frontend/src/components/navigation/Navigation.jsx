@@ -21,6 +21,10 @@ const Navigation = ({ user, set_user, is_authenticated, set_is_authenticated }) 
             }
             set_is_authenticated(false);
             set_user({})
+            document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+
+            // Redirect user to home page after successful logout
+            window.location.href = "/";
         }
         catch (err)
         {
