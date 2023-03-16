@@ -2,7 +2,7 @@ import express from "express";
 import model_authentication from "../models/model_authentication.js";
 import model_user from "../models/model_user.js";
 import bcrypt from "bcryptjs";
-import { ERROR_MESSAGES } from "../utils/constants.js";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../utils/constants.js";
 
 const router_login = express.Router();
 
@@ -63,7 +63,8 @@ router_login.post("/", async (req, res) =>
   }
   catch (err)
   {
-    res.status(500).json({ message: err.message })
+    console.log(err.message)
+    res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER })
   }
 })
 
@@ -93,11 +94,12 @@ router_login.delete("/", async (req, res) =>
     );
 
     //Return success message
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: SUCCESS_MESSAGES.LOGOUT });
   }
   catch (err)
   {
-    res.status(500).json({ message: err.message });
+    console.log(err.message)
+    res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER });
   }
 });
 
