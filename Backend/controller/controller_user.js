@@ -1,7 +1,7 @@
 import express from "express";
 import model_user from "../models/model_user.js";
 import model_authentication from "../models/model_authentication.js";
-import { ERROR_MESSAGES } from "../utils/constants.js";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../utils/constants.js";
 import { check_session, update_session } from "../utils/middlewares.js";
 
 const router_user = express.Router();
@@ -39,7 +39,8 @@ router_user.get("/", check_session, update_session, async (req, res) =>
     }
     catch (err)
     {
-        res.status(400).json({ message: err.message })
+        console.log(err.message)
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER })
     }
 })
 
@@ -52,7 +53,7 @@ router_user.post("/registration", async (req, res) =>
         const check_name = await model_user.findOne({ "name": req.body.username });
         if (check_name !== null)
         {
-            res.status(400).json({ message: "This username is already taken." });
+            res.status(400).json({ message: ERROR_MESSAGES.USER_ALREADY_EXISTS });
             return;
         }
 
@@ -60,14 +61,14 @@ router_user.post("/registration", async (req, res) =>
         const check_phone = await model_user.findOne({ "phone": req.body.phone_number });
         if (check_phone !== null)
         {
-            res.status(400).json({ message: "This phone number is used by onother user." });
+            res.status(400).json({ message: ERROR_MESSAGES.PHONE_NUMBER_IS_TAKEN });
             return;
         }
         const phone_regex = /(?:\+\d{1,3}[- ]?)?\d?\d{3}[- ]?\d{5}/;
         const is_valid_phone = phone_regex.test(req.body.phone_number);
         if (!is_valid_phone)
         {
-            res.status(400).json({ message: "Please input correct phone number" });
+            res.status(400).json({ message: ERROR_MESSAGES.INVALID_PHONE_NUMBER });
             return;
         }
 
@@ -75,14 +76,14 @@ router_user.post("/registration", async (req, res) =>
         const check_email = await model_user.findOne({ "email": req.body.email });
         if (check_email !== null)
         {
-            res.status(400).json({ message: "This email is taken." });
+            res.status(400).json({ message: ERROR_MESSAGES.EMAIL_TAKEN });
             return;
         }
         const email_regex = /\S+@\S+\.\S+/;
         const is_valid_email = email_regex.test(req.body.email);
         if (!is_valid_email)
         {
-            res.status(400).json({ message: "Please input correct email adress." })
+            res.status(400).json({ message: ERROR_MESSAGES.INVALID_EMAIL })
             return;
         }
 
@@ -91,7 +92,7 @@ router_user.post("/registration", async (req, res) =>
         const is_valid_password = password_regex.test(req.body.password);
         if (!is_valid_password)
         {
-            res.status(400).json({ message: "Password should have minimum 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character" });
+            res.status(400).json({ message: ERROR_MESSAGES.INVALID_PASSWORD_REQUIRMENTS });
             return;
         }
 
@@ -106,13 +107,14 @@ router_user.post("/registration", async (req, res) =>
                 "phone": req.body.phone_number,
                 "description": req.body.description,
             })
-        res.status(201).json({ message: "New user created" })
+        res.status(201).json({ message: SUCCESS_MESSAGES.NEW_USER })
         return;
 
     }
     catch (err)
     {
-        res.status(400).json({ message: err.message });
+        console.log(err.message)
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER });
     }
 })
 
