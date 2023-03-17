@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import router_book from "./controller/controller_book.js"
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 
 //routes
 app.use("/api/v1/user", router_user);
-app.use("/api/v1/login", router_login)
+app.use("/api/v1/login", router_login);
+app.use("/api/v1/book", router_book);
 
 export default app;
