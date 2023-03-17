@@ -30,19 +30,6 @@ const Registration = (props) =>
         }))
     };
 
-    const handle_file_input_change = async (e) =>
-    {
-        //here need to make that input 
-        const file = e.target.files[0].name;
-        const temp = await convert_photo_to_string(file);
-        console.log(temp)
-        set_input_form((prev_states) =>
-        ({
-            ...prev_states,
-            "profile_photo": temp
-        }))
-    }
-
     const handler_submit = async (e) =>
     {
         e.preventDefault();
@@ -91,7 +78,7 @@ const Registration = (props) =>
         catch (err)
         {
             props.set_error(true);
-            set_err_msg(err.response.data.message);
+            set_err_msg(err);
         }
     }
 
