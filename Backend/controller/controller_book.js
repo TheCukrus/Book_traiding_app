@@ -178,3 +178,6 @@ router_book.delete("/", check_session, update_session, async (req, res) =>
         res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER })
     }
 })
+
+
+export default router_book;
