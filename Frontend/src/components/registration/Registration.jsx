@@ -73,12 +73,13 @@ const Registration = (props) =>
         try
         {
             const new_user = await axios.post("http://127.0.0.1:80/api/v1/user/registration", input_form);
+            console.log(new_user)
             props.set_success_message(true);
         }
         catch (err)
         {
             props.set_error(true);
-            set_err_msg(err);
+            set_err_msg(err.response.data.message);
         }
     }
 
@@ -101,6 +102,7 @@ const Registration = (props) =>
             return () => clearTimeout(time_out);
         }
     }, [props.success_message]);
+    
     return (
         <div>
             {props.error && <Error_message message={err_msg} />}
@@ -159,7 +161,7 @@ const Registration = (props) =>
                 <Input
                     type="file"
                     name="profile_photo"
-                    onChange={(event) => convert_photo_to_string(set_input_form, event.target.files[0])}
+                    onChange={(event) => convert_photo_to_string(set_input_form, event.target.files[0], "profile_photo")}
                 />
 
                 {/*Password*/}
@@ -203,10 +205,3 @@ const Registration = (props) =>
 }
 
 export default Registration;
-
-/*
-doesn't work profile photo uploader
-input form
-handle change
-input_form (useState)
-*/
