@@ -1,5 +1,5 @@
 
-export const convert_photo_to_string = (set_input_form, param) =>
+export const convert_photo_to_string = (set_input_form, param, name) =>
 {
     const file_reader_1 = new FileReader();
 
@@ -8,7 +8,7 @@ export const convert_photo_to_string = (set_input_form, param) =>
         set_input_form((prev_states) => (
             {
                 ...prev_states,
-                "profile_photo": file_reader_1.result
+                [name]: file_reader_1.result
             }));
     });
 
