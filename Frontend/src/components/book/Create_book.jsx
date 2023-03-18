@@ -1,12 +1,14 @@
 import axios from "axios";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { convert_photo_to_string } from "../../modules/Convert_photo_to_string.js";
 import Input from "../../modules/Input.jsx";
+import Success_message from "../../modules/messages/Success_message.jsx";
+import Error_message from "../../modules/messages/Error_message.jsx";
 
-const Create_book = ({ error, set_error, success_message, set_success_message }) =>
+const Create_book = ({ user, error, set_error, success_message, set_success_message }) =>
 {
-
+    const [err_msg, set_err_msg] = useState("")
     const [input_form, set_input_form] = useState(
         {
             "title": "",
@@ -19,7 +21,6 @@ const Create_book = ({ error, set_error, success_message, set_success_message })
             "language": "",
             "image": "",
         })
-
     const handle_input_change = (e) =>
     {
         const { name, value } = e.target;
@@ -33,16 +34,62 @@ const Create_book = ({ error, set_error, success_message, set_success_message })
     const handle_submit = async (e) =>
     {
         e.preventDefault();
+        const token = document.cookie.replace("token=", "");
 
         try
         {
-            const create_book = await axios.post("http://127.0.0.1:80/api/v1/book")
+            const create_book = await axios.post("http://127.0.0.1:80/api/v1/book/",
+                {
+                    "owner": user.username,
+                    "book": input_form
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            set_success_message(true);
+            set_input_form(
+                {
+                    "title": "",
+                    "author": "",
+                    "description": "",
+                    "ISBN": "",
+                    "genre": "",
+                    "publisher": "",
+                    "publication_year": "",
+                    "language": "",
+                    "image": "",
+                })
         }
         catch (err)
         {
-
+            if (err.response && err.response.data)
+            {
+                set_err_msg(err.response.data.message);
+                return;
+            }
+            set_err_msg("An error occurred while processing your request.")
         }
     }
+
+    //If an error message is present, set a timeout to clear it after 5 sec.
+    useEffect(() =>
+    {
+        if (error)
+        {
+            const time_out = setTimeout(() => set_error(false), 5000);
+            return () => clearTimeout(time_out);
+        }
+    }, [error]);
+
+    //using to success message disapear in 5 sec
+    useEffect(() =>
+    {
+        if (success_message)
+        {
+            const time_out = setTimeout(() => set_success_message(false), 5000);
+            return () => clearTimeout(time_out);
+        }
+    }, [success_message]);
 
     return (
         <div>
@@ -130,14 +177,21 @@ const Create_book = ({ error, set_error, success_message, set_success_message })
                 {/*Image*/}
                 <Input
                     type="file"
-                    name="books_photo"
-                    onChange={(event) => convert_photo_to_string(set_input_form, event.target.files[0])}
+                    name="image"
+                    onChange={(event) => convert_photo_to_string(set_input_form, event.target.files[0], "image")}
                     required={true}
                 />
+
                 {/*Submit button*/}
                 <label htmlFor="submit">
                     <input type="submit" />
                 </label>
+
+                {/*Success message apears when book is created*/}
+                {success_message && <Success_message message={`Book created`} />}
+                {/*Error message apears when user can't create book*/}
+                {error && <Error_message message={err_msg} />}
+
             </form>
         </div>
     )
