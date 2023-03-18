@@ -55,6 +55,7 @@ const App = () =>
         set_error={set_error}
         success_message={success_message}
         set_success_message={set_success_message}
+        user={user}
       />
     </div>
   )
