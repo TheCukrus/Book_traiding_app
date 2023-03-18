@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import config from "../utils/config";
+import config from "../utils/config.js";
 
 const mongoose_connection = mongoose.createConnection(config.mongoose_url);
 
