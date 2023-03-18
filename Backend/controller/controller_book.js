@@ -9,24 +9,24 @@ const router_book = express.Router();
 //Post method to create book data
 router_book.post("/", check_session, update_session, async (req, res) =>
 {
-    const { owner, description, ISBN, genre, publisher, publication_year, title, author, language, image } = req.body.book;
+    const { description, ISBN, genre, publisher, publication_year, title, author, language, image } = req.body.book;
     try
     {
         //Check for required fields
         if (!title || !author || !language || !image)
         {
-            res.status(400).json({ message: ERROR_MESSAGES.BOOK_TITLE });
+            return res.status(400).json({ message: ERROR_MESSAGES.BOOK_TITLE });
         }
 
         //Check if ISBN is valid
         if (ISBN && !is_valid_ISBN(ISBN))
         {
-            res.status(400).json({ message: ERROR_MESSAGES.INVALID_ISBN })
+            return res.status(400).json({ message: ERROR_MESSAGES.INVALID_ISBN })
         }
 
         const response = await model_book.create(
             {
-                owner,
+                "owner": req.body.owner,
                 "book":
                 {
                     title, author, description, ISBN, genre, publisher, publication_year, language, image
