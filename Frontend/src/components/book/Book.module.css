@@ -1,0 +1,11 @@
+
+
+.card_container{
+    border: 1px solid black;
+}
+
+.card_img img
+{
+    width: 18em;
+    height: 18em;
+}
