@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import s from "./Book.module.css";
+import Book_card from "./Book_card.jsx";
 
 const All_books = () =>
 {
@@ -23,33 +24,20 @@ const All_books = () =>
     useEffect(() => { fetch_all_books() }, [])
 
     return (
-        <div>
-            <h1>There we render all books</h1>
-
+        <div className={s.all_books_container}>
             {all_books.length === 0 ?
 
                 <p>Loading</p> :
 
-                <div className={s.card_container}>
-                    <div className={s.card_img}>
-                        <img src={all_books[0].book.image} alt={"img"} />
+                all_books.map((ele, i) =>
+                (
+                    < div key={i} className={s.card_container} >
+                        <Book_card image={ele.book.image} title={ele.book.title} author={ele.book.author} rating={<p>There will be rating system</p>} />
                     </div>
-
-                    <div>
-                        <p>There will be rating system</p>
-                    </div>
-
-                    <div>
-                        <h2>{all_books[0].book.title}</h2>
-                        <p>{all_books[0].book.author}</p>
-                    </div>
-
-                    <div>
-                        <p>{all_books[0].book.description}</p>
-                    </div>
-                </div>
+                ))
             }
-        </div>
+
+        </div >
     )
 }
 

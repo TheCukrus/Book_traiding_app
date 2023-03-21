@@ -1,11 +1,61 @@
-
-
-.card_container{
-    border: 1px solid black;
+.all_books_container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    /* create a grid with auto-fit columns that have a minimum width of 250px and a maximum of 1fr */
+    grid-gap: 20px;
+    /* add some space between the cards */
 }
 
-.card_img img
-{
-    width: 18em;
-    height: 18em;
+.card_container {
+    display: flex;
+    flex-direction: column;
+    /* make the card contents stack vertically */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+    /* set the width to 100% to fill the grid cell */
+    height: 100%;
+    /* set the height to 100% to fill the grid cell */
+}
+
+.card_img {
+    flex: 1; /* make the image fill the available space */
+}
+
+.card_img img {
+    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* make sure the image fills the container and is not stretched */
+}
+
+.book_details {
+    padding: 20px;
+    text-align: center; /* center the text content */
+}
+
+.book_title {
+    font-size: 24px;
+    margin: 0 0 10px 0;
+}
+
+.book_author {
+    font-size: 16px;
+  color: #888;
+  margin: 0 0 10px 0;
+}
+
+.book_rating {
+    margin: 0 0 10px 0;
+}
+
+.rating_stars {
+    color: #f7d842;
+    font-size: 20px;
+}
+
+.rating_value {
+    font-size: 16px;
+    margin-left: 10px;
 }
