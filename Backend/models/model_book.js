@@ -6,6 +6,7 @@ const mongoose_connection = mongoose.createConnection(config.mongoose_url);
 const schema_book = new mongoose.Schema(
     {
         "owner": { type: String, require: true },
+        "price": { type: String },
         "book":
         {
             "title": { type: String, require: true },
