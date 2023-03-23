@@ -27,6 +27,7 @@ router_book.post("/", check_session, update_session, async (req, res) =>
         const response = await model_book.create(
             {
                 "owner": req.body.owner,
+                "price": req.body.price,
                 "book":
                 {
                     title, author, description, ISBN, genre, publisher, publication_year, language, image
@@ -118,6 +119,7 @@ router_book.put("/", check_session, update_session, async (req, res) =>
             { _id: id, owner: owner },
             {
                 $set: {
+                    "price": req.body.price,
                     "book.title": title,
                     "book.author": author,
                     "book.description": description,
