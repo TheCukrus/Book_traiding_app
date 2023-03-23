@@ -3,6 +3,7 @@ import model_user from "../models/model_user.js";
 import model_authentication from "../models/model_authentication.js";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../utils/constants.js";
 import { check_session, update_session } from "../utils/middlewares.js";
+import cloudinary from "../utils/cloudinary_config.js";
 
 const router_user = express.Router();
 
@@ -118,40 +119,5 @@ router_user.post("/registration", async (req, res) =>
     }
 })
 
-//Delete user
-router_user.delete("/delete/:id", async (req, res) =>
-{
-    try
-    {
-        const user_id = req.params.id;
-
-        if (!user_id)
-        {
-            res.status(400).json({ message: "User id not provided" });
-            return;
-        }
-
-        const find_user = await model_user.findById(user_id);
-        if (find_user === null)
-        {
-            res.status(404).json({ message: "User not found" });
-            return;
-        }
-
-        const remove_user = await model_user.findByIdAndRemove(user_id);
-        if (remove_user !== null)
-        {
-            res.status(200).json({ message: "User deleted succesfully" });
-            return;
-        }
-        res.status(404).json({ message: "User not found" });
-        return;
-    }
-    catch (err)
-    {
-        res.status(500).json({ message: err.message });
-        return;
-    }
-});
 
 export default router_user;
