@@ -79,7 +79,7 @@ const Registration = (props) =>
         catch (err)
         {
             props.set_error(true);
-            set_err_msg(err.response.data.message);
+            set_err_msg(err.response);
         }
     }
 
