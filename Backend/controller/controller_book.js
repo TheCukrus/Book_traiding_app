@@ -3,6 +3,7 @@ import model_book from "../models/model_book.js";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../utils/constants.js";
 import { check_session, update_session } from "../utils/middlewares.js";
 import { is_valid_ISBN } from "../utils/helpers.js"
+import cloudinary from "../utils/cloudinary_config.js";
 
 const router_book = express.Router();
 
@@ -24,13 +25,24 @@ router_book.post("/", check_session, update_session, async (req, res) =>
             return res.status(400).json({ message: ERROR_MESSAGES.INVALID_ISBN })
         }
 
+        //Uploading the books cover to Cloudinary
+        const upladed_image = await cloudinary.uploader.upload(image, { folder: "Books_cover" });
+
         const response = await model_book.create(
             {
                 "owner": req.body.owner,
                 "price": req.body.price,
                 "book":
                 {
-                    title, author, description, ISBN, genre, publisher, publication_year, language, image
+                    "title": title,
+                    "author": author,
+                    "description": description,
+                    "ISBN": ISBN,
+                    "genre": genre,
+                    "publisher": publisher,
+                    "publication_year": publication_year,
+                    "language": language,
+                    "image": upladed_image.secure_url
                 }
             }
         )
