@@ -53,7 +53,7 @@ router_user.post("/registration", async (req, res) =>
 
         //Checking if required field's isn't empty
 
-        if (!req.body.username || !req.body.phone_number || !req.body.email || !req.body.location || !req.body.password)
+        if (!req.body.username || !req.body.phone_number || !req.body.email || !req.body.city || !req.body.password)
         {
             res.status(400).json({ message: ERROR_MESSAGES.MISSING_FIELDS })
             return;
@@ -106,7 +106,7 @@ router_user.post("/registration", async (req, res) =>
         }
 
         //Uploading the profile picturee to Cloudinary
-        const upladed_image = await cloudinary.uploader.upload(req.body.profile_photo)
+        const upladed_image = await cloudinary.uploader.upload(req.body.profile_photo, { folder: "Profile_pictures" });
 
         //Creting new user
         const new_user = await model_user.create(
