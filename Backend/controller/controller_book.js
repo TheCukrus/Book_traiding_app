@@ -10,7 +10,7 @@ const router_book = express.Router();
 //Post method to create book data
 router_book.post("/", check_session, update_session, async (req, res) =>
 {
-    const { description, ISBN, genre, publisher, publication_year, title, author, language, image } = req.body.book;
+    const { description, ISBN, genre, publisher, publication_year, title, author, language, image, price } = req.body.book;
     try
     {
         //Check for required fields
@@ -31,7 +31,6 @@ router_book.post("/", check_session, update_session, async (req, res) =>
         const response = await model_book.create(
             {
                 "owner": req.body.owner,
-                "price": req.body.price,
                 "book":
                 {
                     "title": title,
@@ -42,7 +41,8 @@ router_book.post("/", check_session, update_session, async (req, res) =>
                     "publisher": publisher,
                     "publication_year": publication_year,
                     "language": language,
-                    "image": upladed_image.secure_url
+                    "image": upladed_image.secure_url,
+                    "price": price,
                 }
             }
         )
