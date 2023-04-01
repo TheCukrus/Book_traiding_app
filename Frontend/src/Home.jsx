@@ -3,15 +3,14 @@ import All_books from "./components/book/All_books.jsx";
 
 
 
-const Home = () =>
+const Home = ({ all_books, set_books_id }) =>
 {
 
 
     return (
         <div>
-            <h1>this is home component</h1>
-
-            <All_books />
+            <p> </p>
+            <All_books all_books={all_books} set_books_id={set_books_id} />
         </div>
     )
 }
