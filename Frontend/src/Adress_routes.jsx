@@ -4,7 +4,7 @@ import Registration from "./components/registration/Registration.jsx";
 import Login from "./components/login/Login.jsx";
 import Create_book from "./components/book/Create_book.jsx";
 import Book_in_details from "./components/book/Book_in_details.jsx";
-import Profile_page from "./components/Profile/Profile_page.jsx";
+import Profile_page from "./components/profile/Profile_page.jsx";
 
 const Adress_routes = ({ user, error, set_error, success_message, set_success_message, all_books, set_books_id }) =>
 {
