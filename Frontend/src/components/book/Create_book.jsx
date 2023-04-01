@@ -20,6 +20,7 @@ const Create_book = ({ user, error, set_error, success_message, set_success_mess
             "publication_year": "",
             "language": "",
             "image": "",
+            "price": ""
         })
     const handle_input_change = (e) =>
     {
@@ -38,7 +39,7 @@ const Create_book = ({ user, error, set_error, success_message, set_success_mess
 
         try
         {
-            const create_book = await axios.post("http://127.0.0.1:80/api/v1/book/",
+            await axios.post("http://127.0.0.1:80/api/v1/book/",
                 {
                     "owner": user.username,
                     "book": input_form
@@ -58,6 +59,7 @@ const Create_book = ({ user, error, set_error, success_message, set_success_mess
                     "publication_year": "",
                     "language": "",
                     "image": "",
+                    "price": ""
                 })
         }
         catch (err)
@@ -172,6 +174,15 @@ const Create_book = ({ user, error, set_error, success_message, set_success_mess
                     onChange={handle_input_change}
                     placeholder="Book's text language"
                     required={true}
+                />
+
+                {/*Price*/}
+                <Input
+                    type="text"
+                    name="price"
+                    value={input_form.price}
+                    onChange={handle_input_change}
+                    placeholder="Book's price"
                 />
 
                 {/*Image*/}
