@@ -46,7 +46,7 @@ const Header = ({ user, set_user, is_authenticated, set_is_authenticated }) =>
                 :
                 <div>
                     <h4>{user.username}</h4>
-                    <p>profile</p>
+                    <Link to={`/user/${user.username}`}>Profile page</Link>
                     <p><button onClick={handle_logout}>Logout</button></p>
                 </div>}
 
