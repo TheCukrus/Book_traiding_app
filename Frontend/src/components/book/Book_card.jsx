@@ -1,7 +1,7 @@
 import React from "react";
 import s from "./Book.module.css";
 
-const Book_card = ({ image, title, author, rating, description }) =>
+const Book_card = ({ image, title, author, rating }) =>
 {
     return (
         <div>
