@@ -1,27 +1,10 @@
 import React from "react";
-import axios from "axios";
-import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import s from "./Book.module.css";
 import Book_card from "./Book_card.jsx";
 
-const All_books = () =>
+const All_books = ({ all_books, set_books_id }) =>
 {
-    const [all_books, set_all_books] = useState([])
-
-    const fetch_all_books = async () =>
-    {
-        try
-        {
-            const response = await axios.get("http://127.0.0.1:80/api/v1/book/")
-            console.log(response.data.books);
-            set_all_books(response.data.books);
-        }
-        catch (err)
-        {
-            console.log(err);
-        }
-    }
-    useEffect(() => { fetch_all_books() }, [])
 
     return (
         <div className={s.all_books_container}>
@@ -31,9 +14,22 @@ const All_books = () =>
 
                 all_books.map((ele, i) =>
                 (
-                    < div key={i} className={s.card_container} >
-                        <Book_card image={ele.book.image} title={ele.book.title} author={ele.book.author} rating={<p>There will be rating system</p>} />
-                    </div>
+
+                    < Link
+                        to={`/book/${ele._id}`}
+                        //Added the book ID to the URL path
+                        key={i}
+                        className={s.card_container}
+                        onClick={() => { set_books_id(ele._id) }}
+                    >
+
+                        <Book_card
+                            image={ele.book.image}
+                            title={ele.book.title}
+                            author={ele.book.author}
+                            rating={<p>There will be rating system</p>}
+                        />
+                    </Link>
                 ))
             }
 
