@@ -79,7 +79,7 @@ router_book.get("/", async (req, res) =>
 })
 
 //GET method find book by it title
-router_book.get("/:title", async (req, res) =>
+router_book.get("/search/:title", async (req, res) =>
 {
     const { title } = req.params;
 
@@ -87,6 +87,31 @@ router_book.get("/:title", async (req, res) =>
     {
         //Fetch book by it title in case-insensitive way
         const book = await model_book.findOne({ title: { $regex: new RegExp(title, "i") } });
+
+        //Doesn't find book
+        if (!book)
+        {
+            return res.status(404).json({ message: ERROR_MESSAGES.BOOKS_NOT_FOUND })
+        }
+
+        res.status(200).json({ book });
+    }
+    catch (err)
+    {
+        console.log(err)
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER })
+    }
+})
+
+//GET method find book by it ID
+router_book.get("/:id", async (req, res) =>
+{
+    const { id } = req.params;
+
+    try
+    {
+        //Fetch book by it id in case-insensitive way
+        const book = await model_book.findOne({ _id: id });
 
         //Doesn't find book
         if (!book)
