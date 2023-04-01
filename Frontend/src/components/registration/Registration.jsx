@@ -102,7 +102,7 @@ const Registration = (props) =>
             return () => clearTimeout(time_out);
         }
     }, [props.success_message]);
-    
+
     return (
         <div>
             {props.error && <Error_message message={err_msg} />}
