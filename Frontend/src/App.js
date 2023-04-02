@@ -72,7 +72,9 @@ const App = () =>
       </div>
 
       <div className={s.navbar}>
-        <Navbar />
+        <Navbar
+        user={user}
+        />
       </div>
 
       <div className={s.routes}>
