@@ -128,6 +128,29 @@ router_book.get("/:id", async (req, res) =>
     }
 })
 
+//GET method find all books by owner
+router_book.get("/:owner/my_books", check_session, update_session, async (req, res) =>
+{
+    const { owner } = req.params;
+
+    try
+    {
+        const books = await model_book.find({ owner: owner });
+
+        if (books.length === 0)
+        {
+            return res.status(404).json({message : ERROR_MESSAGES.NO_BOOKS})
+        }
+
+        res.status(200).json({ books })
+    }
+    catch (err)
+    {
+        console.log(err);
+        res.status(500).json({ message: ERROR_MESSAGES.INTERNAL_SERVER })
+    }
+})
+
 //PUT method to update existing book
 router_book.put("/", check_session, update_session, async (req, res) =>
 {
