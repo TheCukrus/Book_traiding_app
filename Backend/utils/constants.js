@@ -20,6 +20,7 @@ export const ERROR_MESSAGES = {
     INVALID_PASSWORD_REQUIRMENTS: "Password should have minimum 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character",
     BOOKS_NOT_FOUND: "No books found",
     INTERNAL_SERVER: "Server_error",
+    NO_BOOKS: "You don't have any books saved yet"
 };
 
 
