@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = () =>
+const Navbar = ({user}) =>
 {
     return (
         <div>
             <p>navbar</p>
-            <Link to="create_new_book">create new book</Link>
+            <Link to="create_new_book">Create new book</Link>
+            <Link to={`user/${user.username}/my_books`}>My books</Link>
+            <Link to={`user/${user.username}/whitelist`}>Whitelist</Link>
         </div>
         /*not auth users: home, book filters, about, contacts */
         /*auth users: home, book filters, whitelist, trades, profile*/
