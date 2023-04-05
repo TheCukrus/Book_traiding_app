@@ -11,22 +11,10 @@ const schema_messages = new mongoose.Schema({
 });
 
 const schema_chat = new mongoose.Schema({
-    "users": [
-        {
-            type: { type: String },
-            required: true
-        }
-    ],
+    "users": [{ type: { type: String }, required: true }],
     "messages": [schema_messages],
-    "last_message_timestamp":
-    {
-        type: Date,
-        default: null
-    },
-    "unread_count": {
-        type: Number,
-        default: 0
-    }
+    "last_message_timestamp": { type: Date, default: null },
+    "unread_count": { type: Number, default: 0 }
 });
 
 const model_chat = mongoose_connection.model("chat", schema_chat);
