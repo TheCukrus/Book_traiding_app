@@ -20,7 +20,9 @@ export const ERROR_MESSAGES = {
     INVALID_PASSWORD_REQUIRMENTS: "Password should have minimum 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character",
     BOOKS_NOT_FOUND: "No books found",
     INTERNAL_SERVER: "Server_error",
-    NO_BOOKS: "You don't have any books saved yet"
+    NO_BOOKS: "You don't have any books saved yet",
+    ID_NOT_FOUND: "Missing sender or receive ID",
+    CHAT_EXISTS: "Chat with this user is already exists"
 };
 
 
@@ -30,5 +32,6 @@ export const SUCCESS_MESSAGES = {
     NEW_USER: "New user created",
     BOOK_UPDATED: "The book updated successfull",
     BOOK_REMOVED: "The book removed successfull",
+    CHAT_CREATED: "Chat created successfull",
 
 }
