@@ -22,7 +22,8 @@ export const ERROR_MESSAGES = {
     INTERNAL_SERVER: "Server_error",
     NO_BOOKS: "You don't have any books saved yet",
     ID_NOT_FOUND: "Missing sender or receive ID",
-    CHAT_EXISTS: "Chat with this user is already exists"
+    CHAT_EXISTS: "Chat with this user is already exists",
+    CHAT_NOT_EXISTS: "Chat doesn't exists",
 };
 
 
@@ -33,5 +34,8 @@ export const SUCCESS_MESSAGES = {
     BOOK_UPDATED: "The book updated successfull",
     BOOK_REMOVED: "The book removed successfull",
     CHAT_CREATED: "Chat created successfull",
+    MESSAGE_SENT: "Message send successfull",
+    UNREAD_COUNT_UPDATED: "Unreaded count is updated",
+    LAST_MESSAGE_TIMESTAMP: "Last message timestamp updated successfull"
 
 }
