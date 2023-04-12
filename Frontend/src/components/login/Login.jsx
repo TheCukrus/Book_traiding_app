@@ -3,6 +3,7 @@ import Input from "../../modules/Input.jsx";
 import Error_message from "../../modules/messages/Error_message.jsx";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import s from "./Login.module.css";
 
 const Login = (props) =>
 {
@@ -65,22 +66,36 @@ const Login = (props) =>
     }, [props.error])
 
     return (
-        <div>
-            <h1>Login</h1>
+        <div className={s.container}>
 
-            <form onSubmit={handle_submit}>
+            <div className={s.left_side_container}>
+                <h1>Login</h1>
+                <p>Sign in to continue</p>
+                <hr />
+                <p>
+                    Forgot the password? Click here!
+                    {/*Need to add link to recover password*/}
+                </p>
+
+            </div>
+
+            <form onSubmit={handle_submit} className={s.login_form}>
+
+                <h2>Sign In</h2>
+
                 <Input type="text" name="username" value={input_form.username} onChange={handle_input_change} placeholder="Username" required={true} min_length={3} max_length={25} />
                 <Input type="password" name="password" value={input_form.password} onChange={handle_input_change} placeholder="Password" required={true} min_length={8} />
-                <Input type="checkbox" name="remember_me" />
 
                 <label>
                     <input type="submit" name="submit" value="Login" />
-                    <p>Forgot your password? </p>
                 </label>
             </form>
-            <p>Doesn't have account? <Link to="/registration">Sign up</Link></p>
-            {props.error && <Error_message messgage={err_msg} />}
-        </div >
+
+            <div>
+                {props.error && <Error_message messgage={err_msg} />}
+            </div >
+
+        </div>
     )
 }
 
